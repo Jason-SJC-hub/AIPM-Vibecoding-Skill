@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vibe Coding PRD"
+  short_description: "Guided PRD writing for AI coding workflows"
+  default_prompt: "Use $vibe-coding-prd to turn my product idea into an AI-executable PRD."
