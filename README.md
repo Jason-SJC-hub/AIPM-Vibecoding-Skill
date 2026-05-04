@@ -1,206 +1,155 @@
-# Vibe Coding PRD Skill
+# AIPM-Vibecoding-Skill
 
-> 一个 Claude Code skill，专门帮 vibe coding 用户（不写代码的 PM）写出"AI 可直接执行"的 PRD。
+> vibecoding 专用 Skill 库，沉淀面向 AI 编程助手的产品、需求、执行与交付方法。
 
-## 一句话定位
+这个仓库用于开源和维护一组 AIPM / vibe coding 场景下可直接安装使用的 Skill。它的目标不是写给人看的传统方法论文档，而是把实际项目中反复验证过的工作流、提问方式、验收标准和交付护栏，整理成 AI 编程助手可以稳定调用的操作说明。
 
-写一份**给 Claude Code / Cursor 直接执行**的 PRD（不是给团队 review 的传统 PRD）。
+当前版本首先开源的是 `vibe-coding-prd`：一个专门帮助用户生成“AI 可直接执行”的 vibe coding PRD 的 Skill。
 
----
+## 这个仓库解决什么问题
 
-## 为什么需要它
+vibe coding 的核心风险不是“AI 不会写代码”，而是“需求没有被写成 AI 可以稳定执行的形式”。传统 PRD 往往允许模糊表达，例如“界面更现代”“支持 @ 提及”“体验顺滑一点”。这些描述给人看可以开会补齐，给 AI 执行时却很容易产生自由发挥。
 
-传统 PRD 写给开发团队看，模糊处可以会议讨论补齐。
-Vibe coding PRD 写给 AI 看——**AI 不会开会，模糊处会被自由发挥**。
+这个仓库希望把产品思路转成更适合 AI 执行的材料：
 
-| 场景 | 传统 PRD | Vibe Coding PRD |
-|---|---|---|
-| 颜色描述 | "温暖的米色" ✅ | 必须 `#fef3ef` |
-| 功能描述 | "支持 @ 提及" ✅ | 必须「输入 `@` → 弹出选择浮层」 |
-| 不做的事 | 可以省略 | **必须显式列出**（不然 AI 会过度发挥）|
+- 明确上下文、目标用户、业务边界和成功标准
+- 明确必须做、不能做、暂缓做的范围
+- 明确视觉、行为、数据、技术约束
+- 明确可观测的验收标准
+- 明确 AI 不应该越界发挥的护栏
+- 用可复用 Skill 把这些流程固化下来
 
----
+## 当前包含的 Skill
 
-## 主要功能
+### `vibe-coding-prd`
 
-### 1. 4 步引导对话（每步必须用户确认）
+`vibe-coding-prd` 用于生成给 Claude Code、Cursor 等 AI 编程助手直接执行的 PRD。它不是传统团队评审 PRD，而是面向 AI 落地的执行说明。
 
+核心流程：
+
+1. 前置信息确认：确认产品目标、用户、平台、功能范围和约束
+2. 产品架构确认：先形成一屏产品结构草图，避免直接进入细节
+3. PRD 分模块撰写：逐个确认 Context、Scope、Specification、Acceptance、Guardrails
+4. 自查与二次确认：用检查清单找出模糊点、缺口和 AI 可能误解的位置
+
+适用场景：
+
+- 你有一个产品想法，希望交给 Claude Code 或 Cursor 实现
+- 你不是工程师，但希望把需求写到 AI 能执行的粒度
+- 你已经有 BRD、MRD、idea、notes，希望整理成开发 PRD
+- 你希望减少“AI 做偏了”“越做越复杂”“返工很多”的情况
+
+不适用场景：
+
+- 纯 debug 现有代码
+- 修改已有 PRD 的局部文字
+- 市场分析或商业判断
+- 只问某个技术问题，例如部署、框架选择、报错排查
+
+## 安装方式
+
+把本仓库 clone 到你的 Codex / Claude Code skills 目录下即可。
+
+Codex 示例：
+
+```bash
+git clone https://github.com/<owner>/AIPM-Vibecoding-Skill.git ~/.codex/skills/vibe-coding-prd
 ```
-Step 1: 前置信息确认（5 必答题或读取已有文档）
-   ↓ 等用户确认
-Step 2: 产品架构草图（1 屏架构卡片）
-   ↓ 等用户确认
-Step 3: PRD 5 模块逐个撰写
-   ├─ Context（上下文）
-   ├─ Scope（范围）
-   ├─ Specification（规范）
-   ├─ Acceptance（验收）
-   └─ Guardrails（护栏）
-   ↓ 每模块写完都等用户确认
-Step 4: 17 项自查清单 + 二次确认
+
+Windows PowerShell 示例：
+
+```powershell
+git clone https://github.com/<owner>/AIPM-Vibecoding-Skill.git "$env:USERPROFILE\.codex\skills\vibe-coding-prd"
 ```
 
-### 2. 主动 + 被动两种触发模式
+安装后目录中应直接包含：
 
-**主动触发**（立即启动）：
-- 命令：`/vibe-coding-prd` 或 `/vcprd`
-- 自然语言："写 vibe coding PRD"、"给 Claude Code 用的 PRD"
+```text
+SKILL.md
+README.md
+VERSION
+CHANGELOG.md
+examples/
+templates/
+```
 
-**被动建议**（检测信号 + 询问）：
-当你聊新项目想法时，如果同时满足 ≥3 个信号（讲了功能 + 平台 + 用户 + 问下一步等），skill 主动问"要不要帮你写 PRD？"——回 "好" 才启动，回 "不用" 就闭嘴。
+## 使用方式
 
-### 3. 跨平台支持
+安装后，在支持 Skill 的 AI 编程环境中输入：
 
-包含 3 个完整示例，覆盖最常见的 vibe coding 场景：
-- Web 工具（Next.js / Vercel）
-- iOS App（SwiftUI）
-- 微信小程序（云开发）
+```text
+/vibe-coding-prd
+```
 
-详见 [examples/](./examples/) 目录。
+或：
 
-### 4. 输出文件解耦设计
+```text
+/vcprd
+```
 
-默认输出到 `docs/PRD.md` 单文件；当 P 模块（Specification）超过 200 行时，**自动拆分**为：
-- `docs/PRD.md`（主文档）
-- `docs/DESIGN.md`（视觉 + 行为规范）
-- `docs/TECH.md`（数据 + 技术规范）
+也可以直接说：
 
----
+```text
+帮我写一份给 Claude Code 用的 vibe coding PRD
+```
 
-## 怎么用
-
-### 第一次使用
-
-1. 确认 skill 已装（在 Claude Code 里输入 `/vcprd` 看是否有提示）
-2. 准备好你的产品想法（一句话或一段描述都行）
-3. 输入 `/vcprd`，按 4 步流程走
-
-### 已有 BRD/MRD 的情况
-
-skill 会自动扫描当前目录下的：
-- `BRD.md`
-- `MRD.md`
-- `idea.md` / `notes.md` / `想法.md`
-
-读到后会跳过 Step 1 的部分提问，直接复述确认。
-
----
+Skill 会通过分步对话引导你补齐信息，并在关键节点等待确认。
 
 ## 文件结构
 
-```
-vibe-coding-prd/
-├── SKILL.md              # 主入口（AI 加载的核心规则）
-├── README.md             # 本文件
-├── VERSION               # 版本号
-├── CHANGELOG.md          # 变更日志
-├── examples/             # 3 个跨平台完整示例
+```text
+AIPM-Vibecoding-Skill/
+├── SKILL.md
+├── README.md
+├── VERSION
+├── CHANGELOG.md
+├── agents/
+│   └── openai.yaml
+├── examples/
 │   ├── web-tool.md
 │   ├── ios-app.md
 │   └── miniprogram.md
-└── templates/            # 可直接复制的模板
+└── templates/
     └── prd-template.md
 ```
 
----
+## 维护约定
 
-## 怎么自定义 / 修改
+每次更新这个仓库时，都必须同步检查并更新以下文件：
 
-### 改触发词
-编辑 `SKILL.md` 的 frontmatter 中 `description` 字段。
-注意：触发词改窄容易，改宽小心和其他 skill 冲突（如 `vibe-prd-writer`、`brd`、`mrd`）。
+- `README.md`：说明新增、删除或变更了什么，让第一次打开仓库的人能理解当前状态
+- `CHANGELOG.md`：记录版本变化和重要调整
+- `VERSION`：按语义化版本更新版本号
+- `SKILL.md`：如果触发逻辑、流程、约束或输出标准发生变化，必须同步更新
+- `examples/` 和 `templates/`：如果 Skill 的使用方式变化，示例和模板也要同步
 
-### 改 5 个模块
-编辑 `SKILL.md` 的 §3 章节。每个模块的 DO/DON'T 都在那里。
+推荐提交前检查：
 
-### 改自查清单
-编辑 `SKILL.md` 的 §7 章节（17 项清单）。增减条目要更新总数。
-
-### 改示例
-编辑 `examples/` 下对应文件，或新增（如 `examples/android-app.md`）。
-
-### 改输出模板
-编辑 `templates/prd-template.md`。
-
-### 改后必须做的事
-1. 更新 `VERSION`（语义化版本，重大改动 +1.0.0，小改动 +0.1.0）
-2. 在 `CHANGELOG.md` 加一条记录
-3. 重启 Claude Code 才能让改动生效（或运行 `/hooks` 重载配置）
-
----
-
-## 怎么分享给同事
-
-### 方式 A：直接拷贝目录
-把整个 `vibe-coding-prd/` 文件夹拷给同事，让他们放到自己的 `~/.claude/skills/` 下，重启 Claude Code 即可。
-
-### 方式 B：git 仓库
 ```bash
-cd ~/.claude/skills/vibe-coding-prd
-git init
-git add .
-git commit -m "v1.0.0 vibe coding prd skill"
-git remote add origin <你的仓库地址>
-git push -u origin main
+python ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py .
 ```
 
-同事拉取：
-```bash
-cd ~/.claude/skills
-git clone <你的仓库地址> vibe-coding-prd
+在 Windows 上如果遇到中文编码问题，可以使用：
+
+```powershell
+$env:PYTHONUTF8='1'
+python "$env:USERPROFILE\.codex\skills\.system\skill-creator\scripts\quick_validate.py" .
 ```
 
-### 方式 C：打包 zip
-```bash
-cd ~/.claude/skills
-zip -r vibe-coding-prd-v1.0.0.zip vibe-coding-prd/
-```
-发给同事让他们解压到 `~/.claude/skills/`。
+## 开源说明
 
----
+本仓库完全开源，供 AIPM、独立开发者、产品经理和 vibe coding 用户自由学习、安装、修改和复用。
 
-## 与其他 skill 的关系
-
-| Skill | 关系 | 何时用 |
-|---|---|---|
-| `brd` | 上游 | 评估"要不要做"时用 brd；决定要做后用本 skill |
-| `mrd` | 上游 | 市场分析后，用本 skill 写执行 PRD |
-| `office-hours` | 上游 | 头脑风暴阶段；想清楚后再用本 skill |
-| `pre-flight`（计划中） | 下游 | PRD 完成后，开发前检查环境 |
-| `agent-research`（计划中） | 下游 | AI 项目专用，研究角色 prompt |
-| `eng-control`（计划中） | 下游 | 上线前的工程完备性审查 |
-
----
-
-## 常见问题
-
-### Q1: 它和 `vibe-prd-writer` 有什么区别？
-- `vibe-prd-writer`：10 模块一次性输出（已停用）
-- `vibe-coding-prd`：5 核心模块 + 4 步引导对话 + 强护栏（推荐）
-
-### Q2: 为什么每一步都要等我确认？
-因为 vibe coding 的核心痛点是"AI 默默推进做错了一大段"。强制等确认 = 早发现问题 = 少返工。
-
-### Q3: 我中途想退出怎么办？
-直接说"算了不写了"或者"暂停"。skill 会保留已写入的部分（不删除），下次叫它会从未完成的模块继续。
-
-### Q4: PRD 写完后 idea 改了怎么办？
-直接和 Claude Code 说"PRD 里的 X 改成 Y"。skill 会更新 PRD 并在文末加变更记录。
-**绝对不要**让 Claude Code 直接改代码而不更新 PRD——会导致代码和文档脱节。
-
-### Q5: 怎么验证 skill 装好了？
-在 Claude Code 输入 `/vcprd`，如果出现引导对话就是装好了。
-如果什么反应都没有，重启一下 Claude Code。
-
----
+本仓库使用 [MIT License](./LICENSE)。
 
 ## 版本
 
-当前版本：见 [VERSION](./VERSION)
-变更历史：见 [CHANGELOG.md](./CHANGELOG.md)
+当前版本见 [VERSION](./VERSION)。
 
----
+变更历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
-## 作者
+## 作者与定位
 
-由 vibe coding PM 实际项目复盘后沉淀，开放给团队复用。
+这个仓库来自 AIPM / vibe coding 实践沉淀，面向希望用 AI 编程助手更稳定交付产品的人。
+
+它会持续演进为一个 vibecoding 专用 Skill 库，而不只是单个 PRD Skill。
